@@ -1,22 +1,17 @@
 // src/pages/Login.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import apiClient from '../api/axiosConfig';
-import './AuthForm.css'; // We re-use the same styles!
+import { useAuth } from '../context/AuthContext'; // <-- 1. IMPORT USEAUTH
+import './AuthForm.css';
 
 function Login() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Hook to redirect
+  const navigate = useNavigate();
+  const { login } = useAuth(); // <-- 2. GET THE LOGIN FUNCTION
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -24,24 +19,11 @@ function Login() {
     setError('');
 
     try {
-      // Call the LIVE login endpoint
-      const response = await apiClient.post('/api/auth/login', formData);
-
-      // --- THIS IS THE NEW, IMPORTANT PART ---
-      // 1. Get the token from the response
-      const { token } = response.data;
-
-      // 2. Save the token in the browser's storage
-      localStorage.setItem('token', token);
-
-      // 3. Set the token in our API client for all future requests
-      apiClient.defaults.headers.common['x-auth-token'] = token;
-      // ------------------------------------------
-
-      console.log('Login successful:', response.data.msg);
-
-      // 4. Send the user to the Home page
-      navigate('/');
+      // 3. CALL THE CONTEXT LOGIN FUNCTION
+      await login(formData.email, formData.password);
+      
+      console.log('Login successful');
+      navigate('/'); // Redirect to home
 
     } catch (err) {
       console.error('Login error:', err.response.data);
@@ -49,13 +31,12 @@ function Login() {
     }
   };
 
+  // ... (the rest of your return/JSX is unchanged) ...
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleSubmit}>
         <h1>Log in to EchoPlay</h1>
-        
         {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
@@ -67,7 +48,6 @@ function Login() {
             required
           />
         </div>
-
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
@@ -79,11 +59,9 @@ function Login() {
             required
           />
         </div>
-
         <button type="submit" className="auth-button">
           Log In
         </button>
-
         <p className="auth-switch-link">
           Don't have an account? <Link to="/register">Sign up</Link>
         </p>
