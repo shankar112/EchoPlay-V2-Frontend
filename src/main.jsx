@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute'; // <-- IMPORT
+import UploadTrack from './pages/UploadTrack.jsx';
 
 import App from './App.jsx';
 import Home from './pages/Home.jsx';
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />, 
         children: [
           { path: '/', element: <Home /> },
+          { path: '/upload', element: <UploadTrack /> },
           // You can add more protected pages here later!
           // { path: '/profile', element: <Profile /> },
         ],
