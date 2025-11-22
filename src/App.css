@@ -1,42 +1,203 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* src/App.css */
+/* This file styles our main App.jsx layout */
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #121212; /* Spotify's dark gray content background */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.App-content {
+  flex-grow: 1;
+  padding: 24px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Song Grid */
+.song-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Song Card */
+.song-card {
+  background-color: #181818;
+  padding: 16px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
 }
 
-.card {
-  padding: 2em;
+.song-card:hover {
+  background-color: #282828;
 }
 
-.read-the-docs {
-  color: #888;
+.song-image {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Keeps it square */
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.song-info h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.song-info p {
+  font-size: 0.875rem;
+  color: #b3b3b3;
+  margin: 0;
+}
+
+/* PLAYER BAR STYLES */
+.player-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  background-color: #181818;
+  border-top: 1px solid #282828;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 1000;
+  color: white;
+}
+
+/* Left Section: Song Info */
+.player-info {
+  display: flex;
+  align-items: center;
+  width: 30%;
+  min-width: 180px;
+}
+
+.player-cover {
+  width: 56px;
+  height: 56px;
+  border-radius: 4px;
+  margin-right: 15px;
+  object-fit: cover;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.player-text h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: white;
+  font-weight: 600;
+}
+
+.player-text p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #b3b3b3;
+}
+
+/* Center Section: Controls & Progress */
+.player-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-bottom: 8px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.control-btn:hover {
+  background-color: rgba(255,255,255,0.1);
+  transform: scale(1.1);
+  color: #1ed760; /* Green hover */
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.time {
+  font-size: 0.7rem;
+  color: #b3b3b3;
+  min-width: 35px;
+}
+
+/* Custom Range Slider (Progress Bar) */
+.progress-bar {
+  flex-grow: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: #4f4f4f;
+  appearance: none; /* Remove default styling */
+  cursor: pointer;
+}
+
+.progress-bar::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff; /* White knob */
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.progress-bar:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+/* Right Section: Volume */
+.player-volume {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 30%;
+  gap: 10px;
+}
+
+.volume-icon {
+  color: #b3b3b3;
+}
+
+.volume-bar {
+  width: 100px;
+  height: 4px;
+  border-radius: 2px;
+  background: #4f4f4f;
+  appearance: none;
+  cursor: pointer;
+}
+
+.volume-bar::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
 }
