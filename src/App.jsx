@@ -1,20 +1,22 @@
 // src/App.jsx
-import React from 'react'
-import { Outlet } from 'react-router-dom'
-import './App.css'
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import Player from './components/Player';
+import './App.css';
 
 function App() {
-  // Outlet is a placeholder from react-router-dom
-  // It will render the correct page (Home, Login, or Register)
-  // based on the URL.
+  const [currentTrack, setCurrentTrack] = useState(null);
+
   return (
     <div className="App">
       <main className="App-content">
-        <Outlet />
+        {/* Passes the function down to ProtectedRoute -> Home */}
+        <Outlet context={{ setCurrentTrack }} />
       </main>
-      {/* We will add our <Player /> component here later */}
+      
+      <Player currentTrack={currentTrack} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
