@@ -4,9 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useOutletContext } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
 import SongCard from '../components/SongCard';
-import Loader from '../components/Loader'; // New Loader
-import FeaturedCarousel from '../components/FeaturedCarousel'; // New Carousel
-import { motion } from 'framer-motion'; // For smooth entry
+import Loader from '../components/Loader';
+import FeaturedCarousel from '../components/FeaturedCarousel';
+import { motion } from 'framer-motion';
+import { FaPlay } from 'react-icons/fa'; // Import Play Icon
 
 function Home() {
   const { user, loading, logout } = useAuth();
@@ -44,10 +45,17 @@ function Home() {
     }
   }, [user, view]);
 
-  const handlePlay = (track) => {
+  // Play the song without navigating
+  const handlePlay = (e, track) => {
+    e.stopPropagation(); // Stop the click from bubbling to the card navigation
     if (setCurrentTrack) {
       setCurrentTrack(track);
     }
+  };
+
+  // Navigate to detail page
+  const handleCardClick = (id) => {
+    navigate(`/track/${id}`);
   };
 
   if (loading) return <Loader text="Authenticating..." />;
@@ -63,25 +71,16 @@ function Home() {
           <h1>Welcome, {user.username}.</h1>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <select 
-              value={view} 
-              onChange={(e) => setView(e.target.value)}
-            >
+            <select value={view} onChange={(e) => setView(e.target.value)}>
               <option value="global">Global Feed</option>
               <option value="mine">My Uploads</option>
             </select>
 
-            <Link to="/upload" className="auth-button" style={{ textDecoration: 'none' }}>
-              Upload
-            </Link>
-            
-            <button onClick={handleLogout} className="auth-button" style={{ backgroundColor: '#333', color: 'white' }}>
-              Log Out
-            </button>
+            <Link to="/upload" className="auth-button" style={{ textDecoration: 'none' }}>Upload</Link>
+            <button onClick={handleLogout} className="auth-button" style={{ backgroundColor: '#333', color: 'white' }}>Log Out</button>
           </div>
         </header>
 
-        {/* FEATURED CAROUSEL (Only show on Global view) */}
         {view === 'global' && !isFetching && tracks.length > 0 && (
           <section style={{ marginBottom: '50px' }}>
             <FeaturedCarousel tracks={tracks} />
@@ -104,11 +103,20 @@ function Home() {
               {tracks.map((track) => (
                 <motion.div 
                   key={track._id} 
-                  onClick={() => handlePlay(track)} 
-                  style={{ cursor: 'pointer' }}
-                  whileHover={{ scale: 1.03 }} // Smooth hover effect
+                  onClick={() => handleCardClick(track._id)} // Go to Detail Page
+                  style={{ cursor: 'pointer', position: 'relative' }}
+                  whileHover={{ scale: 1.03 }}
+                  className="song-card-wrapper"
                 > 
                   <SongCard track={track} />
+                  
+                  {/* Floating Play Button (Visible on Hover via CSS) */}
+                  <button 
+                    className="card-play-btn"
+                    onClick={(e) => handlePlay(e, track)}
+                  >
+                    <FaPlay />
+                  </button>
                 </motion.div>
               ))}
             </div>

@@ -9,6 +9,8 @@ import { FaPlay, FaArrowLeft } from 'react-icons/fa';
 const TrackDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  
+  // Grab the global play function from App.jsx
   const { setCurrentTrack } = useOutletContext() || {};
   
   const [track, setTrack] = useState(null);
@@ -29,17 +31,22 @@ const TrackDetail = () => {
   }, [id]);
 
   const handlePlay = () => {
-    if (setCurrentTrack) setCurrentTrack(track);
+    if (setCurrentTrack) {
+      setCurrentTrack(track); // Updates the global player in App.jsx
+    }
   };
 
   if (loading) return <Loader text="Loading Track Details..." />;
-  if (!track) return <h2>Track not found</h2>;
+  if (!track) return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Track not found</h2>;
 
-  // Build Image URL
+  // Build Image URL (Handles both Cloudinary URLs and relative paths)
   let imageUrl = track.coverArtPath;
   if (track.coverArtPath && track.coverArtPath.startsWith('/')) {
     imageUrl = `${apiClient.defaults.baseURL}${track.coverArtPath}`;
   }
+
+  // Fallback image if load fails
+  const fallbackImage = "https://placehold.co/400?text=Music";
 
   return (
     <motion.div 
@@ -51,14 +58,14 @@ const TrackDetail = () => {
     >
       <button 
         onClick={() => navigate(-1)} 
-        style={{ alignSelf: 'flex-start', background: 'none', border: 'none', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '20px' }}
+        style={{ alignSelf: 'flex-start', background: 'none', border: 'none', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '20px', fontSize: '1rem' }}
       >
         <FaArrowLeft /> Back
       </button>
 
       {/* Album Art with Beat Pulse Animation */}
       <motion.div
-        animate={{ scale: [1, 1.05, 1] }}
+        animate={{ scale: [1, 1.02, 1] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         style={{ marginBottom: '30px', position: 'relative' }}
       >
@@ -66,16 +73,20 @@ const TrackDetail = () => {
           src={imageUrl} 
           alt={track.title} 
           style={{ width: '300px', height: '300px', borderRadius: '20px', objectFit: 'cover', boxShadow: '0 20px 50px rgba(29, 185, 84, 0.3)' }}
+          onError={(e) => {
+            e.target.onerror = null; 
+            e.target.src = fallbackImage;
+          }}
         />
       </motion.div>
 
-      <h1 style={{ fontSize: '3rem', marginBottom: '10px', textAlign: 'center' }}>{track.title}</h1>
-      <h3 style={{ color: '#b3b3b3', marginBottom: '30px' }}>{track.artist} • {track.album || 'Single'}</h3>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px', textAlign: 'center', fontWeight: '800' }}>{track.title}</h1>
+      <h3 style={{ color: '#b3b3b3', marginBottom: '30px', fontSize: '1.2rem' }}>{track.artist} • {track.album || 'Single'}</h3>
 
       <button 
         onClick={handlePlay} 
         className="auth-button" 
-        style={{ fontSize: '1.2rem', padding: '15px 40px', display: 'flex', alignItems: 'center', gap: '10px' }}
+        style={{ fontSize: '1.1rem', padding: '15px 40px', display: 'flex', alignItems: 'center', gap: '10px' }}
       >
         <FaPlay /> Play Now
       </button>
