@@ -41,7 +41,7 @@ The application will be available at `http://localhost:5173`.
 
 This frontend application requires a running instance of the EchoPlay v2 backend. The backend API is expected to be running at `https://echoplay-v2-backend.onrender.com`.
 
-You can find the backend repository [here](https://github.com/shankara-subramanian/Echoplay-V2-Backend).
+You can find the backend repository [here](https://github.com/shankar112/EchoPlay-V2-Backend).
 
 ## Project Structure
 
