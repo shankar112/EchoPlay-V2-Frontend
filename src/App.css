@@ -355,3 +355,41 @@ input[type=range]:hover::-webkit-slider-thumb {
 .bar:nth-child(3) { animation-duration: 0.9s; }
 .bar:nth-child(4) { animation-duration: 1.2s; }
 .bar:nth-child(5) { animation-duration: 0.7s; }
+
+/* Add to src/App.css */
+
+.song-card-wrapper {
+  position: relative;
+}
+
+.card-play-btn {
+  position: absolute;
+  bottom: 85px; /* Positioned just above the text */
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: black;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  opacity: 0; /* Hidden by default */
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.song-card-wrapper:hover .card-play-btn {
+  opacity: 1; /* Show on hover */
+  transform: translateY(0);
+}
+
+.card-play-btn:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.1) !important;
+}
