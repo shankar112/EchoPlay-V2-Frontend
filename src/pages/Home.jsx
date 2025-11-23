@@ -7,7 +7,7 @@ import SongCard from '../components/SongCard';
 import Loader from '../components/Loader';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 import { motion } from 'framer-motion';
-import { FaPlay } from 'react-icons/fa'; // Import Play Icon
+import { FaPlay, FaBars, FaTimes } from 'react-icons/fa';
 
 function Home() {
   const { user, loading, logout } = useAuth();
@@ -18,10 +18,12 @@ function Home() {
   const [fetchError, setFetchError] = useState('');
   const [view, setView] = useState('global'); 
   const [isFetching, setIsFetching] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+    setMenuOpen(false);
   };
 
   useEffect(() => {
@@ -47,7 +49,7 @@ function Home() {
 
   // Play the song without navigating
   const handlePlay = (e, track) => {
-    e.stopPropagation(); // Stop the click from bubbling to the card navigation
+    e.stopPropagation();
     if (setCurrentTrack) {
       setCurrentTrack(track);
     }
@@ -70,7 +72,8 @@ function Home() {
         <header>
           <h1>Welcome, {user.username}.</h1>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          {/* Desktop Navigation */}
+          <div className="desktop-nav">
             <select value={view} onChange={(e) => setView(e.target.value)}>
               <option value="global">Global Feed</option>
               <option value="mine">My Uploads</option>
@@ -79,6 +82,48 @@ function Home() {
             <Link to="/upload" className="auth-button" style={{ textDecoration: 'none' }}>Upload</Link>
             <button onClick={handleLogout} className="auth-button" style={{ backgroundColor: '#333', color: 'white' }}>Log Out</button>
           </div>
+
+          {/* Mobile Hamburger Menu */}
+          <button className="hamburger-btn" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+
+          {/* Mobile Menu */}
+          <motion.div 
+            className={`mobile-menu ${menuOpen ? 'open' : ''}`}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: menuOpen ? 1 : 0, y: menuOpen ? 0 : -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <select 
+              value={view} 
+              onChange={(e) => {
+                setView(e.target.value);
+                setMenuOpen(false);
+              }}
+              className="mobile-select"
+            >
+              <option value="global">Global Feed</option>
+              <option value="mine">My Uploads</option>
+            </select>
+
+            <Link 
+              to="/upload" 
+              className="auth-button mobile-menu-btn" 
+              style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}
+              onClick={() => setMenuOpen(false)}
+            >
+              Upload
+            </Link>
+            
+            <button 
+              onClick={handleLogout} 
+              className="auth-button mobile-menu-btn" 
+              style={{ backgroundColor: '#333', color: 'white', width: '100%' }}
+            >
+              Log Out
+            </button>
+          </motion.div>
         </header>
 
         {view === 'global' && !isFetching && tracks.length > 0 && (
