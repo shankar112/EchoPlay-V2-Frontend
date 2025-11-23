@@ -4,13 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useOutletContext } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
 import SongCard from '../components/SongCard';
+import Loader from '../components/Loader'; // New Loader
+import FeaturedCarousel from '../components/FeaturedCarousel'; // New Carousel
+import { motion } from 'framer-motion'; // For smooth entry
 
 function Home() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  
-  // --- GET THE PLAY FUNCTION ---
-  // We grab 'setCurrentTrack' from the Outlet context
   const { setCurrentTrack } = useOutletContext() || {}; 
 
   const [tracks, setTracks] = useState([]);
@@ -44,51 +44,57 @@ function Home() {
     }
   }, [user, view]);
 
-  // Function to handle clicking a song
   const handlePlay = (track) => {
     if (setCurrentTrack) {
-      console.log("Playing track:", track.title);
-      setCurrentTrack(track); // <--- This starts the music
-    } else {
-      console.error("Player context not found!");
+      setCurrentTrack(track);
     }
   };
 
-  if (loading) return <h1>Loading...</h1>;
+  if (loading) return <Loader text="Authenticating..." />;
 
   if (user) {
     return (
-      <div>
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
-          <h1>Welcome, {user.username}!</h1>
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        transition={{ duration: 0.5 }}
+      >
+        <header>
+          <h1>Welcome, {user.username}.</h1>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <select 
               value={view} 
               onChange={(e) => setView(e.target.value)}
-              style={{ padding: '10px 15px', borderRadius: '20px', backgroundColor: '#333', color: 'white', border: '1px solid #555', cursor: 'pointer', fontSize: '1rem', outline: 'none' }}
             >
               <option value="global">Global Feed</option>
               <option value="mine">My Uploads</option>
             </select>
 
-            <Link to="/upload" className="auth-button" style={{ textDecoration: 'none', marginTop: 0 }}>
-              Upload Music
+            <Link to="/upload" className="auth-button" style={{ textDecoration: 'none' }}>
+              Upload
             </Link>
             
-            <button onClick={handleLogout} className="auth-button" style={{ backgroundColor: '#333', color: 'white', marginTop: 0 }}>
+            <button onClick={handleLogout} className="auth-button" style={{ backgroundColor: '#333', color: 'white' }}>
               Log Out
             </button>
           </div>
         </header>
 
+        {/* FEATURED CAROUSEL (Only show on Global view) */}
+        {view === 'global' && !isFetching && tracks.length > 0 && (
+          <section style={{ marginBottom: '50px' }}>
+            <FeaturedCarousel tracks={tracks} />
+          </section>
+        )}
+
         <div className="song-list-container">
-          <h2>{view === 'global' ? 'Global Feed' : 'My Personal Library'}</h2>
+          <h2>{view === 'global' ? 'Recent Uploads' : 'My Personal Library'}</h2>
           
           {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
 
           {isFetching ? (
-            <p style={{ color: '#888' }}>Loading songs...</p>
+            <Loader text="Loading your tracks..." />
           ) : tracks.length === 0 ? (
              <p style={{ marginTop: '20px', color: '#bbb' }}>
                {view === 'global' ? "No songs yet." : "You haven't uploaded any songs yet."}
@@ -96,15 +102,19 @@ function Home() {
           ) : (
             <div className="song-grid">
               {tracks.map((track) => (
-                // WRAP THE CARD IN A CLICK HANDLER
-                <div key={track._id} onClick={() => handlePlay(track)} style={{ cursor: 'pointer' }}> 
+                <motion.div 
+                  key={track._id} 
+                  onClick={() => handlePlay(track)} 
+                  style={{ cursor: 'pointer' }}
+                  whileHover={{ scale: 1.03 }} // Smooth hover effect
+                > 
                   <SongCard track={track} />
-                </div>
+                </motion.div>
               ))}
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -113,8 +123,8 @@ function Home() {
       <h1>Welcome to EchoPlay</h1>
       <p>The best place to share and discover indie music.</p>
       <div style={{ marginTop: '20px' }}>
-        <Link to="/login" className="auth-button" style={{ textDecoration: 'none', marginRight: '10px' }}>Log In</Link>
-        <Link to="/register" className="auth-button" style={{ textDecoration: 'none', backgroundColor: 'white', color: 'black' }}>Sign Up</Link>
+        <Link to="/login" className="auth-button" style={{ marginRight: '10px' }}>Log In</Link>
+        <Link to="/register" className="auth-button" style={{ backgroundColor: 'white', color: 'black' }}>Sign Up</Link>
       </div>
     </div>
   );
