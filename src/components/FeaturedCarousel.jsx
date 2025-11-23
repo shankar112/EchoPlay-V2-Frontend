@@ -23,7 +23,6 @@ const FeaturedCarousel = ({ tracks }) => {
       <h2 style={{marginBottom: '0px', border: 'none'}}>Featured Picks</h2>
       <Swiper
         effect={'coverflow'}
-        grabCursor={true}
         centeredSlides={true}
         slidesPerView={'auto'}
         initialSlide={1}
