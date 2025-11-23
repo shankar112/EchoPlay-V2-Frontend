@@ -6,6 +6,7 @@ import apiClient from '../api/axiosConfig';
 import SongCard from '../components/SongCard';
 import Loader from '../components/Loader';
 import FeaturedCarousel from '../components/FeaturedCarousel';
+import Logo from '../components/Logo';
 import { motion } from 'framer-motion';
 import { FaPlay, FaBars, FaTimes } from 'react-icons/fa';
 
@@ -70,7 +71,14 @@ function Home() {
         transition={{ duration: 0.5 }}
       >
         <header>
-          <h1>Welcome, {user.username}.</h1>
+          {/* Logo Header Section */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1 }}>
+            <Logo width={50} height={50} />
+            <div>
+              <h1 style={{ fontSize: '1.8rem', marginBottom: '0', margin: '0' }}>EchoPlay</h1>
+              <p style={{ margin: 0, color: '#b3b3b3', fontSize: '0.9rem' }}>Welcome back, {user.username}</p>
+            </div>
+          </div>
           
           {/* Desktop Navigation */}
           <div className="desktop-nav">

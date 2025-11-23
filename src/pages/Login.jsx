@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // <-- 1. IMPORT USEAUTH
+import Logo from '../components/Logo';
 import './AuthForm.css';
 
 function Login() {
@@ -35,6 +36,11 @@ function Login() {
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleSubmit}>
+        {/* Logo Section */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <Logo width={60} height={60} />
+        </div>
+
         <h1>Log in to EchoPlay</h1>
         {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
         <div className="form-group">
