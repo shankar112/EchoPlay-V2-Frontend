@@ -1,46 +1,148 @@
 /* src/App.css */
-/* This file styles our main App.jsx layout */
+@import url('https://fonts.googleapis.com/css2?family=Circular+Std+Book:wght@400;700&family=Inter:wght@300;400;600;800&display=swap');
 
+:root {
+  --primary: #1db954;
+  --primary-hover: #1ed760;
+  --dark-bg: #121212;
+  --darker-bg: #0a0a0a;
+  --card-bg: #181818;
+  --text-main: #ffffff;
+  --text-secondary: #b3b3b3;
+  --glass-bg: rgba(18, 18, 18, 0.85);
+  --nav-height: 100px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--darker-bg);
+  color: var(--text-main);
+  /* Subtle animated gradient background */
+  background: radial-gradient(circle at top left, #1a1a1a, #000000);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* --- LAYOUT & PERFORMANCE --- */
 .App {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #121212; /* Spotify's dark gray content background */
 }
 
 .App-content {
   flex-grow: 1;
-  padding: 24px;
+  padding: 30px;
+  /* FIX: Add padding so content isn't hidden behind player */
+  padding-bottom: 140px; 
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-/* Song Grid */
+/* --- HEADERS --- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #fff, #b3b3b3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+/* --- BUTTONS --- */
+.auth-button {
+  background-color: var(--primary);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  text-decoration: none;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.auth-button:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(29, 185, 84, 0.4);
+}
+
+/* --- DROPDOWN --- */
+select {
+  padding: 10px 20px;
+  border-radius: 50px;
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #444;
+  cursor: pointer;
+  font-size: 0.9rem;
+  outline: none;
+  transition: 0.3s;
+}
+
+select:hover {
+  background-color: #333;
+  border-color: #fff;
+}
+
+/* --- SONG GRID --- */
 .song-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 24px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 30px;
 }
 
-/* Song Card */
+/* --- SONG CARD --- */
 .song-card {
-  background-color: #181818;
+  background-color: var(--card-bg);
   padding: 16px;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+  border-radius: 12px;
+  transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .song-card:hover {
   background-color: #282828;
+  transform: translateY(-8px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .song-image {
   width: 100%;
-  aspect-ratio: 1 / 1; /* Keeps it square */
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-bottom: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
 .song-info h3 {
@@ -49,63 +151,53 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 4px;
+  color: #fff;
+  margin-bottom: 6px;
 }
 
 .song-info p {
-  font-size: 0.875rem;
-  color: #b3b3b3;
-  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
-/* PLAYER BAR STYLES */
+/* --- PLAYER BAR (Glassmorphism) --- */
 .player-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 90px;
-  background-color: #181818;
-  border-top: 1px solid #282828;
+  height: 100px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px); /* The Glass Effect */
+  border-top: 1px solid rgba(255,255,255,0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 40px;
   z-index: 1000;
-  color: white;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
 }
 
-/* Left Section: Song Info */
 .player-info {
   display: flex;
   align-items: center;
   width: 30%;
-  min-width: 180px;
 }
 
 .player-cover {
-  width: 56px;
-  height: 56px;
-  border-radius: 4px;
-  margin-right: 15px;
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  margin-right: 20px;
   object-fit: cover;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .player-text h4 {
-  margin: 0;
-  font-size: 0.9rem;
-  color: white;
-  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 4px;
 }
 
-.player-text p {
-  margin: 0;
-  font-size: 0.75rem;
-  color: #b3b3b3;
-}
-
-/* Center Section: Controls & Progress */
 .player-controls {
   display: flex;
   flex-direction: column;
@@ -117,87 +209,149 @@
   background: none;
   border: none;
   color: white;
-  font-size: 1.2rem;
+  font-size: 2rem; /* Bigger play button */
   cursor: pointer;
-  margin-bottom: 8px;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  border-radius: 50%;
+  transition: 0.2s;
+  margin-bottom: 5px;
 }
 
 .control-btn:hover {
-  background-color: rgba(255,255,255,0.1);
   transform: scale(1.1);
-  color: #1ed760; /* Green hover */
+  color: var(--primary);
+  background-color: rgba(255,255,255,0.05);
 }
 
 .progress-container {
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 10px;
+  gap: 15px;
 }
 
 .time {
-  font-size: 0.7rem;
-  color: #b3b3b3;
-  min-width: 35px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  width: 40px;
+  text-align: center;
 }
 
-/* Custom Range Slider (Progress Bar) */
-.progress-bar {
+/* Styled Range Slider */
+input[type=range] {
+  -webkit-appearance: none;
+  background: transparent;
   flex-grow: 1;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
   height: 4px;
-  border-radius: 2px;
   background: #4f4f4f;
-  appearance: none; /* Remove default styling */
-  cursor: pointer;
+  border-radius: 2px;
 }
 
-.progress-bar::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
   height: 12px;
+  width: 12px;
   border-radius: 50%;
-  background: #fff; /* White knob */
-  cursor: pointer;
-  transition: transform 0.1s;
+  background: #fff;
+  margin-top: -4px;
+  opacity: 0; /* Hidden until hover */
+  transition: 0.2s;
 }
 
-.progress-bar:hover::-webkit-slider-thumb {
-  transform: scale(1.2);
+input[type=range]:hover::-webkit-slider-thumb {
+  opacity: 1;
 }
 
-/* Right Section: Volume */
 .player-volume {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   width: 30%;
-  gap: 10px;
+  gap: 15px;
 }
 
-.volume-icon {
-  color: #b3b3b3;
+/* --- LOADING SPINNER --- */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.volume-bar {
-  width: 100px;
-  height: 4px;
-  border-radius: 2px;
-  background: #4f4f4f;
-  appearance: none;
-  cursor: pointer;
-}
-
-.volume-bar::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #333;
+  border-top: 5px solid var(--primary);
   border-radius: 50%;
-  background: #fff;
+  animation: spin 1s linear infinite;
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- SWIPER CAROUSEL STYLES --- */
+.swiper {
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.swiper-slide {
+  background-position: center;
+  background-size: cover;
+  width: 300px;
+  height: 300px;
+  /* Reflection/Watery effect handled by Swiper Coverflow */
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+}
+
+/* --- VISUALIZER (CSS ONLY) --- */
+.visualizer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  height: 60px;
+  margin-top: 20px;
+}
+
+.bar {
+  width: 8px;
+  background: var(--primary);
+  border-radius: 5px;
+  animation: equalizer 1s ease-in-out infinite;
+}
+
+@keyframes equalizer {
+  0% { height: 10px; }
+  50% { height: 50px; }
+  100% { height: 10px; }
+}
+
+/* Different timings for bars to look random */
+.bar:nth-child(1) { animation-duration: 0.8s; }
+.bar:nth-child(2) { animation-duration: 1.1s; }
+.bar:nth-child(3) { animation-duration: 0.9s; }
+.bar:nth-child(4) { animation-duration: 1.2s; }
+.bar:nth-child(5) { animation-duration: 0.7s; }

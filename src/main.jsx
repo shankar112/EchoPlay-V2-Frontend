@@ -3,13 +3,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute'; // <-- IMPORT
-import UploadTrack from './pages/UploadTrack.jsx';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import App from './App.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import UploadTrack from './pages/UploadTrack.jsx';
+import TrackDetail from './pages/TrackDetail.jsx'; // Keep this!
 
 import './index.css';
 
@@ -18,21 +19,16 @@ const router = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
-      // --- PROTECTED ROUTES ---
-      // We wrap our protected pages (like Home) inside this special route.
-      // If a user isn't logged in, ProtectedRoute will send them to /login.
+      // Protected Routes
       {
-        element: <ProtectedRoute />, 
+        element: <ProtectedRoute />,
         children: [
           { path: '/', element: <Home /> },
           { path: '/upload', element: <UploadTrack /> },
-          // You can add more protected pages here later!
-          // { path: '/profile', element: <Profile /> },
+          { path: '/track/:id', element: <TrackDetail /> }, // Dynamic Route for details
         ],
       },
-      
-      // --- PUBLIC ROUTES ---
-      // These pages are open to everyone.
+      // Public Routes
       { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> },
     ],
@@ -41,7 +37,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {/* We wrap everything in AuthProvider so our whole app knows if we're logged in */}
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
