@@ -72,7 +72,7 @@ function Home() {
       >
         <header>
           {/* Logo Header Section */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1 }}>
+          <div className="logo-header">
             <Logo width={50} height={50} />
             <div>
               <h1 style={{ fontSize: '1.8rem', marginBottom: '0', margin: '0' }}>EchoPlay</h1>
