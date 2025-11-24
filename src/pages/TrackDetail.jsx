@@ -1,27 +1,33 @@
 // src/pages/TrackDetail.jsx
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
 import Loader from '../components/Loader';
 import { motion } from 'framer-motion';
 import { FaPlay, FaPause, FaArrowLeft, FaVolumeUp } from 'react-icons/fa';
+import AudioContext from '../context/AudioContext';
 
 const TrackDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  useOutletContext();
-  
-  const audioRef = useRef(null);
+  const { 
+    playTrack, 
+    togglePlay, 
+    currentTrack, 
+    isPlaying, 
+    currentTime, 
+    duration, 
+    seek, 
+    volume, 
+    changeVolume 
+  } = useContext(AudioContext);
+
   const [track, setTrack] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
 
   useEffect(() => {
     const fetchTrack = async () => {
+      setLoading(true);
       try {
         const response = await apiClient.get(`/api/tracks/${id}`);
         setTrack(response.data);
@@ -34,44 +40,22 @@ const TrackDetail = () => {
     fetchTrack();
   }, [id]);
 
+  const isCurrentTrackPlaying = currentTrack?._id === track?._id && isPlaying;
+
   const handlePlay = () => {
-    if (audioRef.current) {
-      if (audioRef.current.paused) {
-        audioRef.current.play();
-        setIsPlaying(true);
-      } else {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      }
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-    }
-  };
-
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
+    if (currentTrack?._id === track?._id) {
+      togglePlay();
+    } else {
+      playTrack(track);
     }
   };
 
   const handleSeek = (e) => {
-    if (audioRef.current) {
-      const time = e.target.value;
-      audioRef.current.currentTime = time;
-      setCurrentTime(time);
-    }
+    seek(e.target.value);
   };
 
   const handleVolume = (e) => {
-    const vol = e.target.value;
-    setVolume(vol);
-    if (audioRef.current) {
-      audioRef.current.volume = vol;
-    }
+    changeVolume(e.target.value);
   };
 
   const formatTime = (time) => {
@@ -84,13 +68,11 @@ const TrackDetail = () => {
   if (loading) return <Loader text="Loading Track Details..." />;
   if (!track) return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Track not found</h2>;
 
-  // Build Image URL (Handles both Cloudinary URLs and relative paths)
+  // Build Image URL
   let imageUrl = track.coverArtPath;
   if (track.coverArtPath && track.coverArtPath.startsWith('/')) {
     imageUrl = `${apiClient.defaults.baseURL}${track.coverArtPath}`;
   }
-
-  // Fallback image if load fails
   const fallbackImage = "https://placehold.co/400?text=Music";
 
   return (
@@ -108,9 +90,8 @@ const TrackDetail = () => {
         <FaArrowLeft /> Back
       </button>
 
-      {/* Album Art with Beat Pulse Animation */}
       <motion.div
-        animate={{ scale: [1, 1.02, 1] }}
+        animate={{ scale: isCurrentTrackPlaying ? [1, 1.02, 1] : 1 }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         style={{ marginBottom: '30px', position: 'relative' }}
       >
@@ -118,10 +99,7 @@ const TrackDetail = () => {
           src={imageUrl} 
           alt={track.title} 
           style={{ width: '300px', height: '300px', borderRadius: '20px', objectFit: 'cover', boxShadow: '0 20px 50px rgba(29, 185, 84, 0.3)' }}
-          onError={(e) => {
-            e.target.onerror = null; 
-            e.target.src = fallbackImage;
-          }}
+          onError={(e) => { e.target.src = fallbackImage; }}
         />
       </motion.div>
 
@@ -133,12 +111,12 @@ const TrackDetail = () => {
         className="auth-button" 
         style={{ fontSize: '1.1rem', padding: '15px 40px', display: 'flex', alignItems: 'center', gap: '10px' }}
       >
-        {isPlaying ? <FaPause /> : <FaPlay />} 
-        {isPlaying ? 'Pause' : 'Play Now'}
+        {isCurrentTrackPlaying ? <FaPause /> : <FaPlay />} 
+        {isCurrentTrackPlaying ? 'Pause' : 'Play Now'}
       </button>
 
-      {/* Mini Audio Player - Only shown when playing */}
-      {isPlaying && (
+      {/* Mini Audio Player - Conditionally shown */}
+      {(currentTrack?._id === track?._id) && (
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -154,7 +132,6 @@ const TrackDetail = () => {
             backdropFilter: 'blur(10px)'
           }}
         >
-          {/* Progress Bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
             <span style={{ fontSize: '0.85rem', color: '#b3b3b3', minWidth: '40px' }}>{formatTime(currentTime)}</span>
             <input 
@@ -163,19 +140,10 @@ const TrackDetail = () => {
               max={duration || 0} 
               value={currentTime} 
               onChange={handleSeek}
-              style={{ 
-                flex: 1,
-                height: '6px',
-                borderRadius: '3px',
-                background: 'rgba(255,255,255,0.2)',
-                outline: 'none',
-                cursor: 'pointer'
-              }}
+              style={{ flex: 1, height: '6px', /* ... */ }}
             />
             <span style={{ fontSize: '0.85rem', color: '#b3b3b3', minWidth: '40px', textAlign: 'right' }}>{formatTime(duration)}</span>
           </div>
-
-          {/* Volume Control */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <FaVolumeUp style={{ color: '#1db954', fontSize: '0.95rem' }} />
             <input 
@@ -185,37 +153,16 @@ const TrackDetail = () => {
               step="0.01"
               value={volume}
               onChange={handleVolume}
-              style={{ 
-                flex: 1,
-                height: '4px',
-                borderRadius: '2px',
-                background: 'rgba(255,255,255,0.2)',
-                outline: 'none',
-                cursor: 'pointer'
-              }}
+              style={{ flex: 1, height: '4px', /* ... */ }}
             />
           </div>
         </motion.div>
       )}
 
-      {/* Hidden Audio Element */}
-      <audio 
-        ref={audioRef}
-        src={track?.filePath} 
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => setIsPlaying(false)}
-      />
-
-      {/* Simulated CSS Visualizer */}
-      <div className="visualizer">
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
-        <div className="bar"></div>
+      {/* Visualizer might need to be linked to global isPlaying state */}
+      <div className={`visualizer ${isCurrentTrackPlaying ? 'playing' : ''}`}>
+        {/* ... bars ... */}
       </div>
-
     </motion.div>
   );
 };

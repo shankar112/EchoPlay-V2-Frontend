@@ -55,26 +55,17 @@ header {
   justify-content: space-between;
   align-items: center;
   margin-bottom: clamp(30px, 8vw, 40px);
-  flex-wrap: wrap;
   gap: clamp(15px, 3vw, 20px);
   padding: 0;
   position: relative;
+  flex-wrap: nowrap;
 }
 
 header h1 {
   min-width: clamp(200px, 60%, 400px);
-  flex: 1;
   margin: 0;
   line-height: 1.2;
   word-break: break-word;
-}
-
-header > div {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: clamp(10px, 2vw, 15px);
-  flex-wrap: wrap;
 }
 
 /* Desktop Navigation */
@@ -83,7 +74,15 @@ header > div {
   align-items: center;
   justify-content: flex-end;
   gap: clamp(10px, 2vw, 15px);
-  flex-wrap: wrap;
+}
+
+/* Logo Header Section */
+.logo-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  min-width: 0;
 }
 
 /* Hamburger Button */
@@ -191,7 +190,7 @@ h2 {
 
 /* --- DROPDOWN --- */
 select {
-  margin-top: 0;
+  margin-top: 16px;
   padding: clamp(10px, 2vw, 12px) clamp(16px, 3vw, 20px);
   border-radius: 50px;
   background-color: var(--card-bg);
@@ -576,15 +575,42 @@ input[type=range]:hover::-moz-range-thumb {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    padding-left: 50px;
+    gap: 12px;
+  }
+
+  .logo-header {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .logo-header > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .logo-header h1 {
+    font-size: 1.3rem !important;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .logo-header p {
+    display: block;
+    margin: 0;
+    color: #999;
+    font-size: 0.8rem;
+    line-height: 1;
   }
 
   header h1 {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  header > div {
-    width: auto;
+    min-width: auto;
   }
 
   .song-grid {

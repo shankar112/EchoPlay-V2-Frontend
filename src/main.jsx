@@ -14,6 +14,8 @@ import TrackDetail from './pages/TrackDetail.jsx'; // Keep this!
 
 import './index.css';
 
+import { AudioProvider } from './context/AudioContext';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -38,7 +40,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <AudioProvider>
+        <RouterProvider router={router} />
+      </AudioProvider>
     </AuthProvider>
   </React.StrictMode>
 );

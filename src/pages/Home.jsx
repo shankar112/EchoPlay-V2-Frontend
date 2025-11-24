@@ -1,22 +1,23 @@
-// src/pages/Home.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link, useOutletContext } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
 import SongCard from '../components/SongCard';
 import Loader from '../components/Loader';
 import FeaturedCarousel from '../components/FeaturedCarousel';
+import Logo from '../components/Logo';
 import { motion } from 'framer-motion';
 import { FaPlay, FaBars, FaTimes } from 'react-icons/fa';
+import AudioContext from '../context/AudioContext';
 
 function Home() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  const { setCurrentTrack } = useOutletContext() || {}; 
+  const { playTrack } = useContext(AudioContext);
 
   const [tracks, setTracks] = useState([]);
   const [fetchError, setFetchError] = useState('');
-  const [view, setView] = useState('global'); 
+  const [view, setView] = useState('global');
   const [isFetching, setIsFetching] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -28,7 +29,7 @@ function Home() {
 
   useEffect(() => {
     const fetchTracks = async () => {
-      setIsFetching(true); 
+      setIsFetching(true);
       setFetchError('');
       try {
         const endpoint = view === 'global' ? '/api/tracks' : '/api/tracks/my-tracks';
@@ -50,9 +51,7 @@ function Home() {
   // Play the song without navigating
   const handlePlay = (e, track) => {
     e.stopPropagation();
-    if (setCurrentTrack) {
-      setCurrentTrack(track);
-    }
+    playTrack(track);
   };
 
   // Navigate to detail page
@@ -64,13 +63,20 @@ function Home() {
 
   if (user) {
     return (
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         <header>
-          <h1>Welcome, {user.username}.</h1>
+          {/* Logo Header Section */}
+          <div className="logo-header">
+            <Logo width={50} height={50} />
+            <div>
+              <h1 style={{ fontSize: '1.8rem', marginBottom: '0', margin: '0' }}>EchoPlay</h1>
+              <p style={{ margin: 0, color: '#b3b3b3', fontSize: '0.9rem' }}>Welcome back, {user.username}</p>
+            </div>
+          </div>
           
           {/* Desktop Navigation */}
           <div className="desktop-nav">
@@ -89,14 +95,14 @@ function Home() {
           </button>
 
           {/* Mobile Menu */}
-          <motion.div 
+          <motion.div
             className={`mobile-menu ${menuOpen ? 'open' : ''}`}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: menuOpen ? 1 : 0, y: menuOpen ? 0 : -20 }}
             transition={{ duration: 0.2 }}
           >
-            <select 
-              value={view} 
+            <select
+              value={view}
               onChange={(e) => {
                 setView(e.target.value);
                 setMenuOpen(false);
@@ -107,18 +113,18 @@ function Home() {
               <option value="mine">My Uploads</option>
             </select>
 
-            <Link 
-              to="/upload" 
-              className="auth-button mobile-menu-btn" 
+            <Link
+              to="/upload"
+              className="auth-button mobile-menu-btn"
               style={{ textDecoration: 'none', width: '100%', textAlign: 'center' }}
               onClick={() => setMenuOpen(false)}
             >
               Upload
             </Link>
             
-            <button 
-              onClick={handleLogout} 
-              className="auth-button mobile-menu-btn" 
+            <button
+              onClick={handleLogout}
+              className="auth-button mobile-menu-btn"
               style={{ backgroundColor: '#333', color: 'white', width: '100%' }}
             >
               Log Out
@@ -146,17 +152,17 @@ function Home() {
           ) : (
             <div className="song-grid">
               {tracks.map((track) => (
-                <motion.div 
-                  key={track._id} 
+                <motion.div
+                  key={track._id}
                   onClick={() => handleCardClick(track._id)} // Go to Detail Page
                   style={{ cursor: 'pointer', position: 'relative' }}
                   whileHover={{ scale: 1.03 }}
                   className="song-card-wrapper"
-                > 
+                >
                   <SongCard track={track} />
                   
                   {/* Floating Play Button (Visible on Hover via CSS) */}
-                  <button 
+                  <button
                     className="card-play-btn"
                     onClick={(e) => handlePlay(e, track)}
                   >

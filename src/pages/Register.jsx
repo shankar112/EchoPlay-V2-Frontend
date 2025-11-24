@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import apiClient from '../api/axiosConfig';
+import Logo from '../components/Logo';
 import './AuthForm.css'; // Import our new styles
 
 function Register() {
@@ -46,6 +47,11 @@ function Register() {
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleSubmit}>
+        {/* Logo Section */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <Logo width={60} height={60} />
+        </div>
+
         <h1>Sign up for EchoPlay</h1>
         
         {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}

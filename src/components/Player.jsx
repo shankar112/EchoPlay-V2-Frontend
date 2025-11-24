@@ -1,57 +1,32 @@
 // src/components/Player.jsx
-import React, { useRef, useEffect, useState } from 'react';
-import { FaPlay, FaPause, FaVolumeUp } from 'react-icons/fa'; // Import icons
-import '../App.css'; 
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaPlay, FaPause, FaVolumeUp, FaTimes, FaArrowRight } from 'react-icons/fa'; // Import icons
+import AudioContext from '../context/AudioContext';
+import '../App.css';
 
-function Player({ currentTrack }) {
-  const audioRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-
-  // Reset state when track changes
-  useEffect(() => {
-    if (currentTrack && audioRef.current) {
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => console.error("Playback failed:", err));
-    }
-  }, [currentTrack]);
-
-  // Handle Play/Pause Click
-  const togglePlay = () => {
-    if (audioRef.current.paused) {
-      audioRef.current.play();
-      setIsPlaying(true);
-    } else {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  // Update progress bar as song plays
-  const handleTimeUpdate = () => {
-    setCurrentTime(audioRef.current.currentTime);
-  };
-
-  // Set duration when song loads
-  const handleLoadedMetadata = () => {
-    setDuration(audioRef.current.duration);
-  };
+function Player() {
+  const navigate = useNavigate();
+  const { 
+    currentTrack, 
+    isPlaying, 
+    currentTime, 
+    duration, 
+    volume, 
+    togglePlay, 
+    seek, 
+    changeVolume,
+    closePlayer
+  } = useContext(AudioContext);
 
   // Handle user dragging the progress bar
   const handleSeek = (e) => {
-    const time = e.target.value;
-    audioRef.current.currentTime = time;
-    setCurrentTime(time);
+    seek(e.target.value);
   };
 
   // Handle Volume Change
   const handleVolume = (e) => {
-    const vol = e.target.value;
-    setVolume(vol);
-    audioRef.current.volume = vol;
+    changeVolume(e.target.value);
   };
 
   // Helper to format time (e.g., 125s -> 2:05)
@@ -61,8 +36,14 @@ function Player({ currentTrack }) {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
+  
+  const navigateToTrack = () => {
+    if (currentTrack) {
+      navigate(`/track/${currentTrack._id}`);
+    }
+  }
 
-  if (!currentTrack) return null; 
+  if (!currentTrack) return null;
 
   const coverArt = currentTrack.coverArtPath || "https://placehold.co/50?text=Music";
 
@@ -70,11 +51,11 @@ function Player({ currentTrack }) {
     <div className="player-bar">
       {/* 1. Song Info (Left) */}
       <div className="player-info">
-        <img 
-          src={coverArt} 
-          alt="Cover" 
+        <img
+          src={coverArt}
+          alt="Cover"
           className="player-cover"
-          onError={(e) => e.target.src = "https://placehold.co/50?text=Music"} 
+          onError={(e) => e.target.src = "https://placehold.co/50?text=Music"}
         />
         <div className="player-text">
           <h4>{currentTrack.title}</h4>
@@ -90,11 +71,11 @@ function Player({ currentTrack }) {
         
         <div className="progress-container">
           <span className="time">{formatTime(currentTime)}</span>
-          <input 
-            type="range" 
-            min="0" 
-            max={duration || 0} 
-            value={currentTime} 
+          <input
+            type="range"
+            min="0"
+            max={duration || 0}
+            value={currentTime}
             onChange={handleSeek}
             className="progress-bar"
           />
@@ -105,25 +86,22 @@ function Player({ currentTrack }) {
       {/* 3. Volume (Right) */}
       <div className="player-volume">
         <FaVolumeUp className="volume-icon" />
-        <input 
-          type="range" 
-          min="0" 
-          max="1" 
+        <input
+          type="range"
+          min="0"
+          max="1"
           step="0.01"
           value={volume}
           onChange={handleVolume}
           className="volume-bar"
         />
+        <button className="control-btn" onClick={navigateToTrack} style={{ marginLeft: '10px' }}>
+          <FaArrowRight />
+        </button>
+        <button className="control-btn" onClick={closePlayer} style={{ marginLeft: '10px' }}>
+          <FaTimes />
+        </button>
       </div>
-
-      {/* Hidden Audio Element */}
-      <audio 
-        ref={audioRef}
-        src={currentTrack.filePath} 
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => setIsPlaying(false)}
-      />
     </div>
   );
 }
